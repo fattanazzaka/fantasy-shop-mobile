@@ -51,3 +51,58 @@ Hot Reload
 Apa itu: Proses "menyuntikkan" kode baru ke dalam Dart Virtual Machine (VM) yang sedang berjalan dan langsung menggambar ulang UI (memanggil ulang metode build()). State aplikasi tetap terjaga. Data yang ada di variabel atau State tidak hilang. Digunakan 90% waktu saat mengembangkan UI. Sangat cepat (seringkali < 1 detik).
 Hot Restart
 Memuat ulang seluruh aplikasi dari awal, tetapi lebih cepat daripada menghentikan dan menjalankan ulang aplikasi (Cold Restart).State aplikasi hilang dan kembali ke nilai default-nya. Digunakan saat perubahan kode terlalu besar untuk Hot Reload, misalnya mengubah initState() atau mengubah struktur constructor. 
+
+## Tugas 8
+### 1. Navigasi: `push()` vs. `pushReplacement()`
+
+Pengelolaan alur halaman (navigasi) adalah inti dari aplikasi. Kami menggunakan dua metode utama dari `Navigator`:
+* **`Navigator.push()`**
+    * **Definisi:** Menumpuk page baru di atas tumpukan.
+    * **Fungsi:** Halaman baru (misal Halaman B) "didorong" ke atas halaman saat ini (Halaman A). Halaman A **masih ada di bawahnya**. Pengguna bisa kembali ke Halaman A dengan menekan tombol *back*.
+    * **Contoh Penggunaan:** Pindah dari **Daftar Produk** ke **Halaman Detail Produk**. Setelah selesai melihat, pengguna bisa kembali ke daftar produk.
+
+* **`Navigator.pushReplacement()`**
+    * **Definisi:** Mengganti page teratas dari tumpukan dengan page baru.
+    * **Fungsi:** Halaman baru (Halaman B) "menggantikan" halaman saat ini (Halaman A). Halaman A **dihapus dari tumpukan**. Pengguna *tidak bisa* kembali ke Halaman A dengan tombol *back*.
+    * **Contoh Penggunaan:** Pindah dari **Halaman Login** ke **Halaman Utama (Home)**. Ini penting agar pengguna tidak bisa kembali ke halaman Login setelah mereka berhasil masuk.
+
+---
+
+### 2. Struktur Halaman: `Scaffold`, `AppBar`, dan `Drawer`
+
+Untuk menjaga konsistensi UI di seluruh aplikasi, kami memanfaatkan hierarki widget dasar dari Flutter:
+
+* **`Scaffold`**: Berperan sebagai "kerangka" dasar untuk setiap halaman. Widget ini menyediakan "slot" standar untuk `appBar` (di atas), `body` (konten utama), dan `drawer` (menu samping).
+* **`AppBar`**: Ditempatkan di dalam `Scaffold` untuk memastikan semua halaman punya *header* yang seragam. Ini menampilkan judul halaman dan warna *brand* yang konsisten.
+* **`Drawer`**: Digunakan sebagai pusat navigasi utama (menu samping). Dengan menempatkannya di `Scaffold`, kami tidak perlu menduplikasi link menu (seperti "Home", "Kategori", "Profil") di setiap halaman.
+
+---
+
+### 3. Tata Letak (Layout) Form: `Padding`, `SingleChildScrollView`, dan `ListView`
+
+Saat membuat form (seperti "Form Tambah Produk"), widget tata letak ini sangat krusial untuk fungsionalitas dan tampilan:
+
+* **`Padding`**
+    * **Kelebihan:** Memberi "ruang napas" pada elemen UI.
+    * **Contoh Penggunaan:** Kami membungkus setiap `TextFormField` dengan `Padding` agar tidak menempel rapat ke tepi layar atau menempel satu sama lain. Ini membuat form terlihat rapi dan mudah dibaca.
+
+* **`SingleChildScrollView`**
+    * **Kelebihan:** Mencegah *error* "bottom overflow" saat keyboard muncul.
+    * **Contoh Penggunaan:** Kami membungkus seluruh `Column` yang berisi *field-field* form dengan `SingleChildScrollView`. Ini memastikan pengguna tetap bisa *scroll* ke bawah untuk mengakses tombol "Save" meskipun keyboard menutupi sebagian layar.
+
+* **`ListView`**
+    * **Kelebihan:** Mirip dengan `SingleChildScrollView` tapi lebih dioptimalkan untuk daftar yang sangat panjang atau dinamis karena menggunakan *lazy loading*.
+    * **Contoh Penggunaan:** Untuk form statis kami, `SingleChildScrollView` sudah cukup. Namun, jika form tersebut memungkinkan pengguna menambah *field* secara dinamis (misalnya menambah banyak ukuran produk), `ListView` adalah pilihan yang lebih baik.
+
+---
+
+### 4. Identitas Visual: `ThemeData`
+
+Untuk memastikan aplikasi Football Shop memiliki identitas visual yang konsisten, kami **tidak melakukan *hard-code* warna** di setiap widget.
+
+Sebagai gantinya, kami mendefinisikan skema warna, font, dan gaya tombol secara terpusat di dalam `ThemeData` pada widget `MaterialApp` (widget akar aplikasi).
+
+Dengan cara ini:
+1.  Semua widget (seperti `AppBar`, `ElevatedButton`, `Switch`) akan **otomatis** mengambil warna dari tema.
+2.  Aplikasi dijamin konsisten.
+3.  Jika di masa depan *brand* berganti warna, kami **cukup mengubahnya di satu tempat** (di `ThemeData`), dan seluruh tampilan aplikasi akan ikut berubah.
